@@ -10,8 +10,8 @@ on:
       - develop
 env:
   PROPERTIES_PATH: "android/key.properties"
-  KEYSTORETXT_PATH: "android/app/upload-keystore.txt"
-  KEYSTOREJKS_PATH: "android/app/upload-keystore.jks"
+  KEYSTORETXT_PATH: "android/app/key.txt"
+  KEYSTOREJKS_PATH: "android/app/key.jks"
 name: "Build & Release"
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
-      - run: ls
+      - run: ls android
       - name: Create properties file
         run: |
           echo keyPassword=\${{ secrets.KEY_STORE }} > ${{env.PROPERTIES_PATH}}
