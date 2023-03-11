@@ -10,6 +10,8 @@ on:
       - develop
 env:
   PROPERTIES_PATH: "./android/key.properties"
+  KEYSTORETXT_PATH: "./android/app/upload-keystore.txt"
+  KEYSTOREJKS_PATH: "./android/app/upload-keystore.jks"
 name: "Build & Release"
 jobs:
   build:
@@ -30,9 +32,9 @@ jobs:
           echo keyAlias=\${{ secrets.KEY_ALIAS }} >> ${{env.PROPERTIES_PATH}}
       - name: Create base64 file
         run: |
-          echo ${{ secrets.KEYSTORE2 }} > android/app/upload-keystore.txt
+          echo ${{ secrets.KEYSTORE2 }} > ${{env.KEYSTORETXT_PATH}}
       - name: Create keystore jks
-        run: openssl base64 -d -in android/app/upload-keystore.txt -out android/app/upload-keystore.jks
+        run: openssl base64 -d -in ${{env.KEYSTORETXT_PATH}} -out ${{env.KEYSTOREJKS_PATH}}
       - run: flutter pub get
       - run: flutter test
       - run: flutter build apk
