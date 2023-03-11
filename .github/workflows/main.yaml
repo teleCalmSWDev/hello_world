@@ -9,9 +9,9 @@ on:
       - master
       - develop
 env:
-  PROPERTIES_PATH: "./android/key.properties"
-  KEYSTORETXT_PATH: "./android/app/upload-keystore.txt"
-  KEYSTOREJKS_PATH: "./android/app/upload-keystore.jks"
+  PROPERTIES_PATH: "android/key.properties"
+  KEYSTORETXT_PATH: "android/app/upload-keystore.txt"
+  KEYSTOREJKS_PATH: "android/app/upload-keystore.jks"
 name: "Build & Release"
 jobs:
   build:
@@ -22,9 +22,7 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
-      - uses: subosito/flutter-action@v1
-        with:
-          flutter-version: '3.3.5'
+      - run: pwd
       - name: Create properties file
         run: |
           echo keyPassword=\${{ secrets.KEY_STORE }} > ${{env.PROPERTIES_PATH}}
@@ -35,6 +33,9 @@ jobs:
           echo ${{ secrets.KEYSTORE2 }} > ${{env.KEYSTORETXT_PATH}}
       - name: Create keystore jks
         run: openssl base64 -d -in ${{env.KEYSTORETXT_PATH}} -out ${{env.KEYSTOREJKS_PATH}}
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.3.5'
       - run: flutter pub get
       - run: flutter test
       - run: flutter build apk
