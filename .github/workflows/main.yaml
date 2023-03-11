@@ -8,6 +8,8 @@ on:
       - main
       - master
       - develop
+env:
+  PROPERTIES_PATH: "./android/key.properties"
 name: "Build & Release"
 jobs:
   build:
@@ -21,9 +23,19 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '3.3.5'
+      - name: Create properties file
+        run: |
+          echo keyPassword=\${{ secrets.KEY_STORE }} > ${{env.PROPERTIES_PATH}}
+          echo storePassword=\${{ secrets.KEY_PASSWORD }} >> ${{env.PROPERTIES_PATH}}
+          echo keyAlias=\${{ secrets.KEY_ALIAS }} >> ${{env.PROPERTIES_PATH}}
+      - name: Create base64 file
+        run: |
+          echo ${{ secrets.KEYSTORE2 }} > android/app/upload-keystore.txt
+      - name: Create keystore jks
+        run: openssl base64 -d -in android/app/upload-keystore.txt -out android/app/upload-keystore.jks
       - run: flutter pub get
       - run: flutter test
-      - run: flutter build apk --debug --split-per-abi
+      - run: flutter build apk
       - run: |
           flutter build ios --no-codesign
           cd build/ios/iphoneos
@@ -35,6 +47,6 @@ jobs:
       - name: Push to Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/apk/debug/*,build/ios/iphoneos/app.ipa"
+          artifacts: "build/app/outputs/apk/release/*,build/ios/iphoneos/app.ipa"
           tag: v1.0.${{ github.run_number }}
           token: ${{ secrets.TOKEN }}
