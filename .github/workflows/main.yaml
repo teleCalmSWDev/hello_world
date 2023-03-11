@@ -30,7 +30,7 @@ jobs:
           echo keyAlias=\${{ secrets.KEY_ALIAS }} >> ${{env.PROPERTIES_PATH}}
       - name: Create base64 file
         run: |
-          echo ${{ secrets.KEYSTORE2 }} >> ${{env.KEYSTORETXT_PATH}}
+          echo "${{ secrets.KEYSTORE2 }}" >> ${{env.KEYSTORETXT_PATH}}
       - name: Create keystore jks
         run: openssl base64 -d -in ${{env.KEYSTORETXT_PATH}} -out ${{env.KEYSTOREJKS_PATH}}
       - uses: subosito/flutter-action@v1
